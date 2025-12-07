@@ -1,0 +1,3 @@
+[submodule "Squidcup_Plugin"]
+	path = Squidcup_Plugin
+	url = https://github.com/18swenskiq/Squidcup_Plugin
