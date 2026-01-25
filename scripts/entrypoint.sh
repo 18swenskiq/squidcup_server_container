@@ -6,6 +6,9 @@ set -e
 CS2_DIR="/home/steam/cs2-dedicated"
 SCRIPTS_SRC="/opt/squidcup-scripts"
 
+# Base container entrypoint location (joedwards32/cs2 uses /home/steam/entry.sh)
+BASE_ENTRYPOINT="/home/steam/entry.sh"
+
 echo "[Squidcup] Initializing Squidcup server container..."
 
 # Copy our pre.sh to the cs2-dedicated directory (which may be volume-mounted)
@@ -25,4 +28,4 @@ fi
 echo "[Squidcup] Handing off to base container entrypoint..."
 
 # Execute the original entrypoint from the base image
-exec /home/steam/cs2-dedicated/entrypoint.sh "$@"
+exec "$BASE_ENTRYPOINT" "$@"
