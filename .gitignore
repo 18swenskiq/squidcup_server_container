@@ -1,0 +1,18 @@
+# Squidcup Server Container - .gitignore
+
+# Environment files with secrets
+.env
+
+# Local build artifacts
+*.tar
+*.tar.gz
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

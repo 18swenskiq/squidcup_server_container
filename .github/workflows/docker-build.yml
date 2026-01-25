@@ -1,0 +1,64 @@
+name: Build and Publish Docker Container
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.*'
+      - 'documentation/**'
+  workflow_dispatch:
+
+env:
+  # Docker Hub image name - update this to your Docker Hub username/org
+  DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/squidcup-server
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Get Squidcup Version
+        id: version
+        run: |
+          SQUIDCUP_VERSION=$(grep -oP 'ModuleVersion\s*=>\s*"\K[^"]*' Squidcup_Plugin/Squidcup.cs)
+          echo "version=$SQUIDCUP_VERSION" >> $GITHUB_OUTPUT
+          echo "Detected Squidcup version: $SQUIDCUP_VERSION"
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.DOCKERHUB_IMAGE }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ steps.version.outputs.version }}
+            type=sha,prefix=
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

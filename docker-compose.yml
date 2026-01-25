@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  cs2-server:
+    build: .
+    # Or use pre-built image when published:
+    # image: ghcr.io/your-username/squidcup-server:latest
+    container_name: squidcup-cs2
+    restart: unless-stopped
+    
+    environment:
+      # Required: Get token from https://steamcommunity.com/dev/managegameservers
+      - SRCDS_TOKEN=${SRCDS_TOKEN}
+      
+      # Server configuration
+      - CS2_SERVERNAME=Squidcup Server
+      - CS2_PORT=27015
+      - CS2_RCON_PORT=27015
+      - CS2_PW=                        # Server password (empty = public)
+      - CS2_RCONPW=${CS2_RCONPW:-changeme}
+      - CS2_MAXPLAYERS=10
+      
+      # Game mode: 0=casual, 1=competitive, 2=wingman, 3=deathmatch
+      - CS2_GAMETYPE=0
+      - CS2_GAMEMODE=1
+      
+      # LAN mode
+      - CS2_LAN=0
+      
+      # Workshop (optional)
+      # - CS2_MAPGROUP=mg_active
+      # - CS2_STARTMAP=de_dust2
+      
+      # Squidcup-specific
+      - ENABLE_UPDATE_CHECK=0          # Set to 1 to auto-restart on CS2 updates
+      - UPDATE_CHECK_INTERVAL=300      # Seconds between update checks
+    
+    volumes:
+      # Persistent storage for game files and configs
+      - /apps/cs2:/home/steam/cs2-dedicated
+    
+    ports:
+      - "27015:27015/tcp"    # RCON
+      - "27015:27015/udp"    # Game traffic
+      - "27020:27020/udp"    # GOTV
+    
+    # Ensure enough shared memory for source engine
+    shm_size: 512m
+    
+    # Resource limits (adjust as needed)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '4'
+    #       memory: 8G
