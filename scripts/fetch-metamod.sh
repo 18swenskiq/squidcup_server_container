@@ -17,7 +17,7 @@ fi
 
 echo "[Metamod] Latest build: $BUILD_NUMBER"
 
-METAMOD_URL="https://mms.alliedmods.net/mmsdrop/2.0/mmsource-2.0.0-git${BUILD_NUMBER}-linux.tar.gz"
+METAMOD_URL="https://github.com/alliedmodders/metamod-source/releases/download/2.0.0.${BUILD_NUMBER}/mmsource-2.0.0-git${BUILD_NUMBER}-linux.tar.gz"
 echo "[Metamod] Downloading from: $METAMOD_URL"
 
 wget -q -O /tmp/metamod.tar.gz "$METAMOD_URL"
